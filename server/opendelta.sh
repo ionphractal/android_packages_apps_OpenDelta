@@ -4,11 +4,7 @@
 
 # Get device either from $DEVICE set by calling script, or first parameter
 
-if [ "$DEVICE" == "" ]; then
-	if [ "$1" != "" ]; then
-		DEVICE=$1
-	fi
-fi
+DEVICE=${DEVICE:-$1}
 
 if [ "$DEVICE" == "" ]; then
 	echo "Abort: no device set" >&2
@@ -17,19 +13,19 @@ fi
 
 # ------ CONFIGURATION ------
 
-HOME=/home/build
+HOME=${HOME_OVERRIDE:-/home/build}
 
 BIN_JAVA=java
-BIN_MINSIGNAPK=$HOME/delta/minsignapk.jar
-BIN_XDELTA=$HOME/delta/xdelta3
-BIN_ZIPADJUST=$HOME/delta/zipadjust
+BIN_MINSIGNAPK=${BIN_MINSIGNAPK:-$HOME/delta/minsignapk.jar}
+BIN_XDELTA=${BIN_XDELTA:-$HOME/delta/xdelta3}
+BIN_ZIPADJUST=${BIN_ZIPADJUST:-$HOME/delta/zipadjust}
 
-FILE_MATCH=omni-*.zip
-PATH_CURRENT=$HOME/omni/out/target/product/$DEVICE
-PATH_LAST=$HOME/delta/last/$DEVICE
+FILE_MATCH=${FILE_MATCH:-omni-*.zip}
+PATH_CURRENT=${PATH_CURRENT:-$HOME/omni/out/target/product/$DEVICE}
+PATH_LAST=${PATH_LAST:-$HOME/delta/last/$DEVICE}
 
-KEY_X509=$HOME/.keys/platform.x509.pem
-KEY_PK8=$HOME/.keys/platform.pk8
+KEY_X509=${KEY_X509:-$HOME/.keys/platform.x509.pem}
+KEY_PK8=${KEY_PK8:-$HOME/.keys/platform.pk8}
 
 # ------ PROCESS ------
 
@@ -153,9 +149,8 @@ echo "      \"md5_official\": \"$MD5_CURRENT\"" >> $DELTA
 echo "  }" >> $DELTA
 echo "}" >> $DELTA
 
-mkdir publish >/dev/null 2>/dev/null
-mkdir publish/$DEVICE >/dev/null 2>/dev/null
-cp out/* publish/$DEVICE/.
+mkdir -p ${DELTA_DIR:-publish}/$DEVICE >/dev/null 2>/dev/null
+cp out/* ${DELTA_DIR:-publish}/$DEVICE/.
 
 rm -rf work
 rm -rf out
